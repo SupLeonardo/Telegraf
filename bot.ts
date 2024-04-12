@@ -8,7 +8,7 @@ bot.on(message('sticker'), (ctx) => ctx.reply('👍'))
 bot.hears('hi', (ctx) => ctx.reply('Hey there'))
 
 bot.command('oldschool', (ctx) => ctx.reply('Hello'))
-bot.command('hipster', Telegraf.reply('λ')) 
+bot.command('hipster', Telegraf.reply('λ'))  
 
 
 bot.launch()
