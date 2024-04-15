@@ -1,5 +1,4 @@
 import { Markup, Telegraf } from 'telegraf'
-import { message } from 'telegraf/filters'
 
 const bot = new Telegraf('6999026340:AAGMF_jcrLH3qULSPj41I7H16KVz1BM8pDA')
 bot.start((ctx) => ctx.reply("Welcome! I'm a restaurant bot. What you want to eat?"))
@@ -15,7 +14,9 @@ bot.action('callback1', (ctx) => {
 
 bot.action('callback2', async (ctx) => {
     let result = await ctx.reply("Bad day");
-	bot.telegram.deleteMessage(ctx.chat.id, result.message_id-1)
+	setTimeout(() => 
+		ctx.deleteMessage(result.message_id), 
+        5000)
 })
 
 bot.on('message', (ctx) => {
