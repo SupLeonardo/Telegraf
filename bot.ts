@@ -1,28 +1,23 @@
 import { Markup, Telegraf } from 'telegraf'
+import { georgiy } from './georgy';
+import { Start, Course } from './keyboard';
 
-const bot = new Telegraf('6999026340:AAGMF_jcrLH3qULSPj41I7H16KVz1BM8pDA')
+const bot = new Telegraf(georgiy)
 bot.start((ctx) => ctx.reply("Welcome! I'm a restaurant bot. What you want to eat?"))
 
-const inlineKeyboard = Markup.inlineKeyboard([
-    [Markup.button.callback('Button 1', 'callback1')],
-    [Markup.button.callback('Button 2', 'callback2')]
-]);
 
-bot.action('callback1', (ctx) => {
-    ctx.reply('Good day')
+
+bot.action('bar', async (ctx) => {
+    ctx.telegram.sendMessage(ctx.chat.id, 'Side dish', Start)
 })
 
-bot.action('callback2', async (ctx) => {
-    let result = await ctx.reply("Bad day");
-	setTimeout(() => 
-		ctx.deleteMessage(result.message_id), 
-        5000)
+bot.action('menu', async (ctx) => {
+    ctx.telegram.sendMessage(ctx.chat.id, 'Side dish', Start)
 })
 
 bot.on('message', (ctx) => {
-    ctx.telegram.sendMessage(ctx.chat.id, 'Choose', inlineKeyboard)
+    ctx.telegram.sendMessage(ctx.chat.id, 'Choose', Start)
 })
-
 
 bot.launch()
 // Enable graceful stop
