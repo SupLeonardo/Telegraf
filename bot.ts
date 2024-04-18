@@ -1,7 +1,8 @@
 import { Markup, Telegraf } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database } from './src/keyboard';
 
+let busket = []
 const bot = new Telegraf(georgiy)
 bot.start((ctx) => ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot. What you want to eat?", Start))
 
@@ -18,17 +19,48 @@ bot.action('bar', async (ctx) => {
 bot.action('menu', async (ctx) => {
     let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can add food from our main menu', Menu)
     ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
+
+
     bot.action('mc', async (ctx) => {
         ctx.telegram.sendMessage(ctx.chat.id, 'Our main course menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Main_Course)
+        bot.action(/m_(.+)/, (ctx) => {    
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(index)
+            ctx.reply(`${name} was added to the busket`);
+        });
+        ctx.answerCbQuery();
     })
     bot.action('salad', async (ctx) => {
-        ctx.telegram.sendMessage(ctx.chat.id, 'Our salads menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Salads)
+        ctx.telegram.sendMessage(ctx.chat.id, 'There is our salads. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Salads)
+        bot.action(/sa_(.+)/, async (ctx) => {    
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(index)
+            ctx.reply(`${name} was added to the busket`);
+        });
+        ctx.answerCbQuery();
     })
     bot.action('sd', async (ctx) => {
-        ctx.telegram.sendMessage(ctx.chat.id, 'Our side dishes menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Side_dishes)
+        ctx.telegram.sendMessage(ctx.chat.id, 'There is our side dishes menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Side_dishes)
+        bot.action(/sd_(.+)/, async (ctx) => {    
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(index)
+            ctx.reply(`${name} was added to the busket`);
+        });
+        ctx.answerCbQuery();
     })
     bot.action('dessert', async (ctx) => {
-        ctx.telegram.sendMessage(ctx.chat.id, 'Our desserts menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Desserts)
+        ctx.telegram.sendMessage(ctx.chat.id, 'There is our desserts menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Desserts)
+        bot.action(/d_(.+)/, async (ctx) => {    
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(index)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        });
+        ctx.answerCbQuery();
     })
 })
 
