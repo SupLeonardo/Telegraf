@@ -26,7 +26,7 @@ bot.action('menu', async (ctx) => {
         bot.action(/m_(.+)/, (ctx) => {    
             const index = Number(ctx.match[1])
             const name = database[index-1]
-            busket.push(index)
+            busket.push(name)
             ctx.reply(`${name} was added to the busket`);
         });
         ctx.answerCbQuery();
@@ -36,7 +36,7 @@ bot.action('menu', async (ctx) => {
         bot.action(/sa_(.+)/, async (ctx) => {    
             const index = Number(ctx.match[1])
             const name = database[index-1]
-            busket.push(index)
+            busket.push(name)
             ctx.reply(`${name} was added to the busket`);
             ctx.answerCbQuery();
         });
@@ -47,7 +47,7 @@ bot.action('menu', async (ctx) => {
         bot.action(/sd_(.+)/, async (ctx) => {    
             const index = Number(ctx.match[1])
             const name = database[index-1]
-            busket.push(index)
+            busket.push(name)
             ctx.reply(`${name} was added to the busket`);
         });
         ctx.answerCbQuery();
@@ -57,7 +57,7 @@ bot.action('menu', async (ctx) => {
         bot.action(/d_(.+)/, async (ctx) => {    
             const index = Number(ctx.match[1])
             const name = database[index-1]
-            busket.push(index)
+            busket.push(name)
             ctx.reply(`${name} was added to the busket`);
             ctx.answerCbQuery();
         });
