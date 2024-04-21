@@ -38,6 +38,7 @@ bot.action('menu', async (ctx) => {
             const name = database[index-1]
             busket.push(index)
             ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
         });
         ctx.answerCbQuery();
     })
