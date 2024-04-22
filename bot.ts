@@ -1,10 +1,15 @@
-import { Markup, Telegraf } from 'telegraf'
+import { Telegraf } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket } from './src/keyboard';
 
-let busket = []
+let busket: string[]
 const bot = new Telegraf(georgiy)
 bot.start((ctx) => ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot. What you want to eat?", Start))
+
+bot.hears('See busket', async (ctx) => {
+    ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:" )
+    
+})
 
 bot.action('bar', async (ctx) => {
     ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks', Bar)

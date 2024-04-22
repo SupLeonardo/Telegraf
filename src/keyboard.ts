@@ -1,4 +1,4 @@
-import { Markup } from "telegraf";
+import { Markup, Telegraf } from "telegraf";
 
 export const database = ['Chicken fried steak with processed cheese', 
 'Chicken Fried Steak', 'Grilled Beef with Mushroom Sause', 
@@ -13,7 +13,7 @@ export const database = ['Chicken fried steak with processed cheese',
 'Garlic Mashed Potatoes', 'Grilled Asparagus with Lemon Butter',
 'Sweet Corn with Herb Butter', 'Baked Macaroni and Cheese',
 'Roasted Brussels Sprouts with Bacon', 'Honey Glazed Carrots', 'Parmesan Truffle Fries', 'Creamed Spinach',
-'Sautéed Green Beans with Almonds', 'Stuffed Bell Peppers', 
+'Sautéed Green Beans with Almonds', 'Stuffed Bell Peppers',
 
 
 //salads
@@ -99,3 +99,10 @@ export const Desserts = Markup.inlineKeyboard([
     [Markup.button.callback('Panna Cotta with Mixed Berry Compote', 'd_41')],
     [Markup.button.callback('Bread Pudding with Bourbon Sauce', 'd_42')]
 ])
+
+
+// REPLY KEYBOARDS
+
+export const goBusket = Markup.keyboard([
+    'Busket'
+]).resize()
