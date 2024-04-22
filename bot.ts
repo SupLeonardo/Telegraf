@@ -1,14 +1,18 @@
-import { Telegraf } from 'telegraf'
+import { Telegraf, Markup } from 'telegraf'
 import { georgiy } from './src/georgy';
 import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket } from './src/keyboard';
 
 let busket: string[]
 const bot = new Telegraf(georgiy)
+// bot.command('test', (ctx) => {ctx.reply('Hey', Markup.forceReply())})
 bot.start((ctx) => ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot. What you want to eat?", Start))
 
-bot.hears('See busket', async (ctx) => {
+bot.hears('Busket', async (ctx) => {
     ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:" )
-    
+    for (let i = 0; i < busket.length; i++) {
+        const element = busket[i];
+        ctx.telegram.sendMessage(ctx.chat.id, element)
+    }
 })
 
 bot.action('bar', async (ctx) => {
