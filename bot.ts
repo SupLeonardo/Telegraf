@@ -1,8 +1,8 @@
 import { Telegraf } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo } from './src/keyboard';
 
-let busket: string[]
+let busket = []
 const bot = new Telegraf(georgiy)
 bot.start((ctx) => ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot. What you want to eat?", Start))
 
@@ -30,9 +30,10 @@ bot.action('menu', async (ctx) => {
         ctx.telegram.sendMessage(ctx.chat.id, 'Our main course menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Main_Course)
         bot.action(/m_(.+)/, (ctx) => {    
             const index = Number(ctx.match[1])
-            const name = database[index-1]
+            const name = database[index-1]                                                                                                                                                                                                                          
             busket.push(name)
             ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
         });
         ctx.answerCbQuery();
     })

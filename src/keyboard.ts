@@ -13,7 +13,7 @@ export const database = ['Chicken fried steak with processed cheese',
 'Garlic Mashed Potatoes', 'Grilled Asparagus with Lemon Butter',
 'Sweet Corn with Herb Butter', 'Baked Macaroni and Cheese',
 'Roasted Brussels Sprouts with Bacon', 'Honey Glazed Carrots', 'Parmesan Truffle Fries', 'Creamed Spinach',
-'Sautéed Green Beans with Almonds', 'Stuffed Bell Peppers',
+'Sautéed Green Beans with Almonds', 'Stuffed Bell Peppers', //22
 
 
 //salads
@@ -29,7 +29,30 @@ export const database = ['Chicken fried steak with processed cheese',
 'Classic New York Cheesecake', 'Chocolate Lava Cake with Vanilla Ice Cream',
 'Apple Pie with Cinnamon', 'Tiramisu with Mascarpone Cream', 'Lemon Tart with Raspberry Sauce',
 'Crème Brûlée with Fresh Berries', 'Red Velvet Cake with Cream Cheese Frosting', 'Brownie Sundae with Hot Fudge',
-'Panna Cotta with Mixed Berry Compote', 'Bread Pudding with Bourbon Sauce']
+'Panna Cotta with Mixed Berry Compote', 'Bread Pudding with Bourbon Sauce',
+
+// strong alcohol
+'Vodka', 'Whiskey', 'Rum',
+'Tequila', 'Mezcal',  'Mezquit',
+'Shochu',  'Gin',  'Tequila Sunrise',
+'Cognac',  'Martini',
+
+// light alochol
+'Red wine (dry)', 'Red wine (semi-dry)', 'Rosé wine (dry)', 'Rosé wine (semi-dry)', 'White wine (dry)', 'White wine (semi-dry)',
+            'Champagne', 'Prosecco', 'Cider', 'Beer (light/dark)', 'Sake', 'Soju',
+
+//alcoholic cocktals
+'Margarita', 'Mojito', 'Old Fashioned', 'Manhattan',
+            'Cosmopolita', 'Daiquiri', 'Tom Collins',  'Moscow Mule',
+            'Whiskey Sour', 'Gimlet',
+
+//non alocoholic cocktails
+'Saffron Cordial', 'Non-Alcoholic Negroni', 'Sharab Rose Raspberry Shrub Cocktail',
+'Frozen Shirley Temple', 'Nonalcoholic Champagne Spritz', 'Strawberry-Chile Balsamic Shrub',
+'Pineapple and Tamarind Cooler', 'Watermelon Limeade', 'Green Refresher',
+'Coffee Cooler', 'Ghia Sour', 'Cherry Red', 'Jardin Verde', 'Shift Drink', 'Psychedelic Backyard'
+
+]
 
 export const Start = Markup.inlineKeyboard([
     [Markup.button.callback('Main menu', 'menu'), 
@@ -100,6 +123,49 @@ export const Desserts = Markup.inlineKeyboard([
     [Markup.button.callback('Bread Pudding with Bourbon Sauce', 'd_42')]
 ])
 
+export const Strong_Acoholo = Markup.inlineKeyboard([
+    [Markup.button.callback('Vodka', 'd_43')],
+    [Markup.button.callback('Whiskey', 'd_44')],
+    [Markup.button.callback('Rum', 'd_45')],
+    [Markup.button.callback('tequila', 'd_46')],
+    [Markup.button.callback('Mezcal', 'd_47')],
+    [Markup.button.callback('Mezquit', 'd_48')],
+    [Markup.button.callback('Shochu', 'd_49')],
+    [Markup.button.callback('Gin', 'd_50')],
+    [Markup.button.callback('Tequila Sunrise', 'd_51')],
+    [Markup.button.callback('Cognac', 'd_52')],
+    [Markup.button.callback('Martini', 'd_53')]
+])
+
+export const Light_Acoholo = Markup.inlineKeyboard([
+    [Markup.button.callback('Red wine (dry)', 'd_54'), Markup.button.callback('Red wine (semi-dry)', 'd_55') ],
+    [Markup.button.callback('Rose wine (dry)', 'd_56'), Markup.button.callback('Red wine (semi-dry)', 'd_57') ],
+    [Markup.button.callback('White wine (dry)', 'd_58'), Markup.button.callback('White wine (semi-dry)', 'd_59') ],
+    [Markup.button.callback('Champagne', 'd_60')],
+    [Markup.button.callback('Prosecco', 'd_61')],
+    [Markup.button.callback('Cider', 'd_62')],
+    [Markup.button.callback('Beer (light)', 'd_63'), Markup.button.callback('Beer (dark)', 'd_64') ],
+    [Markup.button.callback('Sake', 'd_65')],
+    [Markup.button.callback('Soju', 'd_66')]
+])
+
+export const Alc_Cocktails = Markup.inlineKeyboard([
+    [Markup.button.callback('Margarita', 'd_67')],
+    [Markup.button.callback('Mojito', 'd_68')],
+    [Markup.button.callback('Old Fashioned', 'd_69')],
+    [Markup.button.callback('Manhattan', 'd_70')],
+    [Markup.button.callback('Cosmopolita', 'd_71')],
+    [Markup.button.callback('Daiquiri', 'd_72')],
+    [Markup.button.callback('Tom Collins', 'd_73')],
+    [Markup.button.callback('Moscow Mule', 'd_74')],
+    [Markup.button.callback('Whiskey Sour', 'd_75')],
+    [Markup.button.callback('Gimlet', 'd_76')]
+])
+
+
+// 'Margarita', 'Mojito', 'Old Fashioned', 'Manhattan',
+//             'Cosmopolita', 'Daiquiri', 'Tom Collins',  'Moscow Mule',
+//             'Whiskey Sour', 'Gimlet',
 
 // REPLY KEYBOARDS
 
