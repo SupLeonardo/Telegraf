@@ -39,7 +39,7 @@ export const database = ['Chicken fried steak with processed cheese',
 
 // light alochol
 'Red wine (dry)', 'Red wine (semi-dry)', 'Rosé wine (dry)', 'Rosé wine (semi-dry)', 'White wine (dry)', 'White wine (semi-dry)',
-            'Champagne', 'Prosecco', 'Cider', 'Beer (light/dark)', 'Sake', 'Soju',
+            'Champagne', 'Prosecco', 'Cider', 'Beer (light)', 'Beer (dark)', 'Sake', 'Soju',
 
 //alcoholic cocktals
 'Margarita', 'Mojito', 'Old Fashioned', 'Manhattan',
@@ -50,7 +50,11 @@ export const database = ['Chicken fried steak with processed cheese',
 'Saffron Cordial', 'Non-Alcoholic Negroni', 'Sharab Rose Raspberry Shrub Cocktail',
 'Frozen Shirley Temple', 'Nonalcoholic Champagne Spritz', 'Strawberry-Chile Balsamic Shrub',
 'Pineapple and Tamarind Cooler', 'Watermelon Limeade', 'Green Refresher',
-'Coffee Cooler', 'Ghia Sour', 'Cherry Red', 'Jardin Verde', 'Shift Drink', 'Psychedelic Backyard'
+'Coffee Cooler', 'Ghia Sour', 'Cherry Red', 'Jardin Verde', 'Shift Drink', 'Psychedelic Backyard',
+
+// DRINKS & MILSHAKES
+
+'Coca Cola', 'Sprite', 'Fanta', 'Strawberry Milkshake', 'Banana Milkshake', 'Chockolate Milkshake', 'Vanilla Milkshake'
 
 ]
 
@@ -65,8 +69,11 @@ export const Menu = Markup.inlineKeyboard([
 ]);
 
 export const Bar = Markup.inlineKeyboard([
-    [Markup.button.callback('Alcoholic drinks', 'alc')],
-    [Markup.button.callback('Non-alcoholic drinks', 'n-alc')]
+    [Markup.button.callback('Strong alcohol', 'alc')],
+    [Markup.button.callback('Light alcohol', 'l_alc')],
+    [Markup.button.callback('Drinks & Milkshakes', 'n-alc')],
+    [Markup.button.callback('Alcoholic cocktails', 'alc_c')],
+    [Markup.button.callback('Non-alcoholic cocktails', 'n-alc_c')]
 ])
 
 export const Main_Course = Markup.inlineKeyboard([
@@ -123,49 +130,73 @@ export const Desserts = Markup.inlineKeyboard([
     [Markup.button.callback('Bread Pudding with Bourbon Sauce', 'd_42')]
 ])
 
+export const Non_Alco = Markup.inlineKeyboard([
+    [Markup.button.callback('Coca Cola', 'na_92')],
+    [Markup.button.callback('Sprite', 'na_93')],
+    [Markup.button.callback('Fanta', 'na_94')],
+    [Markup.button.callback('Strawberry Milkshake', 'na_95')],
+    [Markup.button.callback('Banana Milkshake', 'na_96')],
+    [Markup.button.callback('Chockolate Milkshake', 'na_97')],
+    [Markup.button.callback('Vanilla Milkshake', 'na_98')]
+])
+
 export const Strong_Acoholo = Markup.inlineKeyboard([
-    [Markup.button.callback('Vodka', 'd_43')],
-    [Markup.button.callback('Whiskey', 'd_44')],
-    [Markup.button.callback('Rum', 'd_45')],
-    [Markup.button.callback('tequila', 'd_46')],
-    [Markup.button.callback('Mezcal', 'd_47')],
-    [Markup.button.callback('Mezquit', 'd_48')],
-    [Markup.button.callback('Shochu', 'd_49')],
-    [Markup.button.callback('Gin', 'd_50')],
-    [Markup.button.callback('Tequila Sunrise', 'd_51')],
-    [Markup.button.callback('Cognac', 'd_52')],
-    [Markup.button.callback('Martini', 'd_53')]
+    [Markup.button.callback('Vodka', 'sta_43')],
+    [Markup.button.callback('Whiskey', 'sta_44')],
+    [Markup.button.callback('Rum', 'sta_45')],
+    [Markup.button.callback('tequila', 'sta_46')],
+    [Markup.button.callback('Mezcal', 'sta_47')],
+    [Markup.button.callback('Mezquit', 'sta_48')],
+    [Markup.button.callback('Shochu', 'sta_49')],
+    [Markup.button.callback('Gin', 'sta_50')],
+    [Markup.button.callback('Tequila Sunrise', 'sta_51')],
+    [Markup.button.callback('Cognac', 'sta_52')],
+    [Markup.button.callback('Martini', 'sta_53')]
 ])
 
 export const Light_Acoholo = Markup.inlineKeyboard([
-    [Markup.button.callback('Red wine (dry)', 'd_54'), Markup.button.callback('Red wine (semi-dry)', 'd_55') ],
-    [Markup.button.callback('Rose wine (dry)', 'd_56'), Markup.button.callback('Red wine (semi-dry)', 'd_57') ],
-    [Markup.button.callback('White wine (dry)', 'd_58'), Markup.button.callback('White wine (semi-dry)', 'd_59') ],
-    [Markup.button.callback('Champagne', 'd_60')],
-    [Markup.button.callback('Prosecco', 'd_61')],
-    [Markup.button.callback('Cider', 'd_62')],
-    [Markup.button.callback('Beer (light)', 'd_63'), Markup.button.callback('Beer (dark)', 'd_64') ],
-    [Markup.button.callback('Sake', 'd_65')],
-    [Markup.button.callback('Soju', 'd_66')]
+    [Markup.button.callback('Red wine (dry)', 'la_54'), Markup.button.callback('Red wine (semi-dry)', 'la_55') ],
+    [Markup.button.callback('Rose wine (dry)', 'la_56'), Markup.button.callback('Red wine (semi-dry)', 'la_57') ],
+    [Markup.button.callback('White wine (dry)', 'la_58'), Markup.button.callback('White wine (semi-dry)', 'la_59') ],
+    [Markup.button.callback('Champagne', 'la_60')],
+    [Markup.button.callback('Prosecco', 'la_61')],
+    [Markup.button.callback('Cider', 'la_62')],
+    [Markup.button.callback('Beer (light)', 'la_63'), Markup.button.callback('Beer (dark)', 'la_64') ],
+    [Markup.button.callback('Sake', 'la_65')],
+    [Markup.button.callback('Soju', 'la_66')]
 ])
 
 export const Alc_Cocktails = Markup.inlineKeyboard([
-    [Markup.button.callback('Margarita', 'd_67')],
-    [Markup.button.callback('Mojito', 'd_68')],
-    [Markup.button.callback('Old Fashioned', 'd_69')],
-    [Markup.button.callback('Manhattan', 'd_70')],
-    [Markup.button.callback('Cosmopolita', 'd_71')],
-    [Markup.button.callback('Daiquiri', 'd_72')],
-    [Markup.button.callback('Tom Collins', 'd_73')],
-    [Markup.button.callback('Moscow Mule', 'd_74')],
-    [Markup.button.callback('Whiskey Sour', 'd_75')],
-    [Markup.button.callback('Gimlet', 'd_76')]
+    [Markup.button.callback('Margarita', 'ac_67')],
+    [Markup.button.callback('Mojito', 'ac_68')],
+    [Markup.button.callback('Old Fashioned', 'ac_69')],
+    [Markup.button.callback('Manhattan', 'ac_70')],
+    [Markup.button.callback('Cosmopolita', 'ac_71')],
+    [Markup.button.callback('Daiquiri', 'ac_72')],
+    [Markup.button.callback('Tom Collins', 'ac_73')],
+    [Markup.button.callback('Moscow Mule', 'ac_74')],
+    [Markup.button.callback('Whiskey Sour', 'ac_75')],
+    [Markup.button.callback('Gimlet', 'ac_76')]
 ])
 
+export const Not_Alc_Cocktails = Markup.inlineKeyboard([
+    [Markup.button.callback('Saffron Cordial', 'nac_77')],
+    [Markup.button.callback('Non-Alcoholic Negroni', 'nac_78')],
+    [Markup.button.callback('Sharab Rose Raspberry Shrub Cocktail', 'nac_79')],
+    [Markup.button.callback('Frozen Shirley Temple', 'nac_80')],
+    [Markup.button.callback('Nonalcoholic Champagne Spritz', 'nac_81')],
+    [Markup.button.callback('Strawberry-Chile Balsamic Shrub', 'nac_82')],
+    [Markup.button.callback('Pineapple and Tamarind Cooler', 'nac_83')],
+    [Markup.button.callback('Watermelon Limeade', 'nac_84')],
+    [Markup.button.callback('Green Refresher', 'nac_85')],
+    [Markup.button.callback('Coffee Cooler', 'nac_86')],
+    [Markup.button.callback('Ghia Sour', 'nac_87')],
+    [Markup.button.callback('Cherry Red', 'nac_88')],
+    [Markup.button.callback('Jardin Verde', 'nac_89')],
+    [Markup.button.callback('Shift Drink', 'nac_90')],
+    [Markup.button.callback('Psychedelic Backyard', 'nac_91')]
+])
 
-// 'Margarita', 'Mojito', 'Old Fashioned', 'Manhattan',
-//             'Cosmopolita', 'Daiquiri', 'Tom Collins',  'Moscow Mule',
-//             'Whiskey Sour', 'Gimlet',
 
 // REPLY KEYBOARDS
 

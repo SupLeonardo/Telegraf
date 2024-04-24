@@ -1,6 +1,6 @@
 import { Telegraf, Markup } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco } from './src/keyboard';
 
 let busket = []
 const bot = new Telegraf(georgiy)
@@ -16,12 +16,62 @@ bot.hears('Busket', async (ctx) => {
 })
 
 bot.action('bar', async (ctx) => {
-    ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks', Bar)
+    let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks', Bar)
+    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
     bot.action('alc', async (ctx) => {
-        ctx.telegram.sendMessage(ctx.chat.id, 'Our alcoholic drinks menu', Bar)
+        ctx.telegram.sendMessage(ctx.chat.id, 'Our strong alcoholic drinks menu', Strong_Acoholo)
+        bot.action(/sta_(.+)/, (ctx) => {
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(name)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        })
+        ctx.answerCbQuery();
+    })
+    bot.action('l_alc', async (ctx) => {
+        ctx.telegram.sendMessage(ctx.chat.id, 'Our light alcoholic drinks menu', Light_Acoholo)
+        bot.action(/la_(.+)/, (ctx) => {
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(name)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        })
+        ctx.answerCbQuery();
     })
     bot.action('n-alc', async (ctx) => {
-        ctx.telegram.sendMessage(ctx.chat.id, 'Our non-alcoholic drinks menu', Bar)
+        ctx.telegram.sendMessage(ctx.chat.id, 'Our drinks & milkshakes menu', Non_Alco)
+        bot.action(/na_(.+)/, (ctx) => {
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(name)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        })
+        ctx.answerCbQuery();
+    })
+    bot.action('alc_c', async (ctx) => {
+        ctx.telegram.sendMessage(ctx.chat.id, 'Our alcoholic cocktails menu', Alc_Cocktails)
+        bot.action(/ac_(.+)/, (ctx) => {
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(name)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        })
+        ctx.answerCbQuery();
+    })
+    bot.action('n-alc_c', async (ctx) => {
+        ctx.telegram.sendMessage(ctx.chat.id, 'Our non-alcoholic cocktails menu', Not_Alc_Cocktails)
+        bot.action(/nac_(.+)/, (ctx) => {
+            const index = Number(ctx.match[1])
+            const name = database[index-1]
+            busket.push(name)
+            ctx.reply(`${name} was added to the busket`);
+            ctx.answerCbQuery();
+        })
+        ctx.answerCbQuery();
     })
 })
 
