@@ -171,4 +171,6 @@ export const Alc_Cocktails = Markup.inlineKeyboard([
 
 export const goBusket = Markup.keyboard([
     'Busket'
-]).resize()
+])
+.resize()
+.oneTime()
