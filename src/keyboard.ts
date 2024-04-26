@@ -1,4 +1,4 @@
-import { Markup, Telegraf } from "telegraf";
+import { Markup, Telegraf } from "telegraf"
 
 export const database = ['Chicken fried steak with processed cheese', 
 'Chicken Fried Steak', 'Grilled Beef with Mushroom Sause', 
