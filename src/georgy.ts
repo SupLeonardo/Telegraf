@@ -1,1 +1,1 @@
-export let georgiy = 'be be be'
+export let georgiy = '6999026340:AAGMF_jcrLH3qULSPj41I7H16KVz1BM8pDA'
