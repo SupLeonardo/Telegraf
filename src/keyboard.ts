@@ -204,3 +204,11 @@ export const goBusket = Markup.keyboard([
     'Busket'
 ])
 .resize()
+
+export const goMenu = Markup.keyboard([
+    'Menu'
+]).resize()
+
+export const BuskMenu = Markup.keyboard([
+    'Menu', 'Busket'
+]).resize()

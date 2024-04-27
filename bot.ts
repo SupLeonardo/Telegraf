@@ -1,23 +1,57 @@
 import { Telegraf, Markup, Context } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu } from './src/keyboard';
 
 let busket = []
 const bot = new Telegraf(georgiy)
 
-function addToBusket(ctx: Context) {
-    for (let i = 0; i < busket.length; i++) {
-        const element = busket[i];
-        let filter = busket.filter(num => num === element).length
-        ctx.telegram.sendMessage(ctx.chat.id, `${element} X ${filter}`)
-        let filteredArray = busket.filter((value, index, self) => {
-            return value !== element || self.indexOf(value) === index;
-        });
-        console.log(filteredArray)
-    }
+function countUniqueValues(arr: any[]): number {
+    const uniqueValues = new Set(arr);
+    return uniqueValues.size;
 }
-function Remover(array: string[], numToRemove: string) {
-    array = array.filter(num => num !== numToRemove);
+
+function countOccurrences(arr: string[], value: string): number { // counter how many times are "value" is in the array
+    return arr.reduce((count, curr) => curr === value ? count + 1 : count, 0);
+}
+
+function addToBusket(ctx: Context) {
+    const uniq = countUniqueValues(busket) // unique values in a busket
+    let countBusket: number[] = []
+    // countBusket.length = uniq // empty array with length of unique values
+    let arr: string[] = []
+    for (let i = 0; i < busket.length; i++) {
+        let product = busket[i]
+        let count = countOccurrences(busket, product)
+        if (!arr.includes(product)) {
+            arr.push(product)
+            countBusket.push(count)
+        }
+        
+    }
+    for (let i = 0; i < arr.length; i++) {
+        ctx.telegram.sendMessage(ctx.chat.id, `${arr[i]}: ${countBusket[i]}`)
+    }
+//     let pon: any[] = []
+//     let arr: any[] = []
+//     for (let i = 0; i < busket.length; i++) {
+//     let temp = 0;
+//     for (let j = 0; j < arr.length; j++) {
+//         if (arr[j][0] && arr[j][0]===busket[i]) {
+//             arr[j][1]++
+//             temp++
+//         }
+//     }
+//     if (temp===0) {
+//         arr.push([busket[i], 1])
+//     }
+//     for (let i = 0; i < arr.length; i++) {
+//         // if (!pon.includes(arr[i][0]))
+//         pon.push(arr[i][0])
+//     }
+    
+// }
+
+console.log(busket)
 }
 // bot.command('test', (ctx) => {ctx.reply('Hey', Markup.forceReply())})
 bot.start( async (ctx) => {
@@ -26,10 +60,18 @@ bot.start( async (ctx) => {
     busket = []
 })
 
-const Busket = () => {bot.hears('Busket', async (ctx) => {
-    await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:")
-    addToBusket(ctx)
+const Busket = () => {
+    bot.hears('Busket', async (ctx) => {
     
+    addToBusket(ctx)
+    if (busket.length === 0) {
+        ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something')
+    } else {
+        await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", goMenu)
+    }
+    bot.hears('Menu', async (ctx) => {
+        ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
+    })
 })}
 
 bot.action('bar', async (ctx) => {
@@ -42,7 +84,7 @@ bot.action('bar', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         })
@@ -55,7 +97,7 @@ bot.action('bar', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         })
@@ -68,7 +110,7 @@ bot.action('bar', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         })
@@ -81,7 +123,7 @@ bot.action('bar', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         })
@@ -94,7 +136,7 @@ bot.action('bar', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         })
@@ -114,7 +156,7 @@ bot.action('menu', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]                                                                                                                                                                                                                          
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         });
@@ -127,7 +169,7 @@ bot.action('menu', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         });
@@ -140,7 +182,7 @@ bot.action('menu', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         });
@@ -153,7 +195,7 @@ bot.action('menu', async (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
             busket.push(name)
-            ctx.reply(`${name} was added to the busket`);
+            ctx.reply(`${name} was added to the busket`, BuskMenu);
             ctx.answerCbQuery();
             Busket()
         });
