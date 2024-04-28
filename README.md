@@ -3,3 +3,5 @@
 <br>
 <h2 align=''>The structure of the bot is very simple: main file is "bot.ts", all keyboards and a database, which contains all food and drinks. There are Inline keyboards (with callback) and Reply keyboards (without callback, they send a message after pressing the button). Also, there are array "busket" in a "bot.ts" with strange work logic, but it works and that's the main point. Also, check my another repos</h2>
 <h3> <a href='https://github.com/telegraf/telegraf'>Telegraf JS repo</a></h3>
+<h3> <a href='https://github.com/feathers-studio/telegraf-docs'>Telegraf JS docs repo</a></h3>
+<h3> <a href='https://telegraf.js.org/'>Telegraf JS website (I think you shouldn't use it)</a></h3>
