@@ -1,8 +1,8 @@
 import { Telegraf, Markup, Context } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu } from './src/keyboard';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu } from './src/keyboard_ru';
 
-let busket = []
+let busket: string[] = []
 const bot = new Telegraf(georgiy)
 
 function countUniqueValues(arr: any[]): number {
@@ -61,15 +61,16 @@ bot.start( async (ctx) => {
 })
 
 const Busket = () => {
-    bot.hears('Busket', async (ctx) => {
+    bot.hears('Корзина', async (ctx) => {
     
-    addToBusket(ctx)
+    
     if (busket.length === 0) {
         ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something')
     } else {
         await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", goMenu)
+        addToBusket(ctx)
     }
-    bot.hears('Menu', async (ctx) => {
+    bot.hears('Меню', async (ctx) => {
         ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     })
 })}
