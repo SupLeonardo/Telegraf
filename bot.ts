@@ -1,6 +1,7 @@
 import { Telegraf, Markup, Context } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu } from './src/keyboard_ru';
+import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu }
+from './src/keyboard';
 
 let busket: string[] = []
 const bot = new Telegraf(georgiy)
