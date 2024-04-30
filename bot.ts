@@ -2,6 +2,8 @@ import { Telegraf, Markup, Context } from 'telegraf'
 import { georgiy } from './src/georgy';
 import { Bar, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, Non_Alco, goMenu, BuskMenu }
 from './src/keyboard';
+import { Descriptions } from './src/descriptions';
+import { Photos } from './src/photos';
 
 let busket: string[] = []
 const bot = new Telegraf(georgiy)
@@ -32,25 +34,6 @@ function addToBusket(ctx: Context) {
     for (let i = 0; i < arr.length; i++) {
         ctx.telegram.sendMessage(ctx.chat.id, `${arr[i]}: ${countBusket[i]}`)
     }
-//     let pon: any[] = []
-//     let arr: any[] = []
-//     for (let i = 0; i < busket.length; i++) {
-//     let temp = 0;
-//     for (let j = 0; j < arr.length; j++) {
-//         if (arr[j][0] && arr[j][0]===busket[i]) {
-//             arr[j][1]++
-//             temp++
-//         }
-//     }
-//     if (temp===0) {
-//         arr.push([busket[i], 1])
-//     }
-//     for (let i = 0; i < arr.length; i++) {
-//         // if (!pon.includes(arr[i][0]))
-//         pon.push(arr[i][0])
-//     }
-    
-// }
 
 console.log(busket)
 }
@@ -62,7 +45,7 @@ bot.start( async (ctx) => {
 })
 
 const Busket = () => {
-    bot.hears('Корзина', async (ctx) => {
+    bot.hears('Busket', async (ctx) => {
     
     
     if (busket.length === 0) {
@@ -81,7 +64,7 @@ bot.action('bar', async (ctx) => {
     ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
     bot.action('alc', async (ctx) => {
         let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Our strong alcoholic drinks menu', Strong_Acoholo)
-        
+        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
         bot.action(/sta_(.+)/, (ctx) => {
             const index = Number(ctx.match[1])
             const name = database[index-1]
@@ -95,8 +78,10 @@ bot.action('bar', async (ctx) => {
     bot.action('l_alc', async (ctx) => {
         let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Our light alcoholic drinks menu', Light_Acoholo)
         ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/la_(.+)/, (ctx) => {
+        bot.action(/la_(.+)/, async (ctx) => {
             const index = Number(ctx.match[1])
+            const description = Descriptions[index-1]
+            await ctx.replyWithPhoto('https://www.wfla.com/wp-content/uploads/sites/71/2023/05/GettyImages-1389862392.jpg?w=2560&h=1440&crop=1', {caption: description})
             const name = database[index-1]
             busket.push(name)
             ctx.reply(`${name} was added to the busket`, BuskMenu);
@@ -154,8 +139,11 @@ bot.action('menu', async (ctx) => {
     bot.action('mc', async (ctx) => {
         let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Our main course menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Main_Course)
         ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/m_(.+)/, (ctx) => {    
+        bot.action(/m_(.+)/, (ctx) => {
             const index = Number(ctx.match[1])
+            const photo = Photos[index-1]
+            const description = Descriptions[index-1]
+            ctx.replyWithPhoto(photo, {caption: description})    
             const name = database[index-1]                                                                                                                                                                                                                          
             busket.push(name)
             ctx.reply(`${name} was added to the busket`, BuskMenu);
