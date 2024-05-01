@@ -139,11 +139,11 @@ bot.action('menu', async (ctx) => {
     bot.action('mc', async (ctx) => {
         let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Our main course menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Main_Course)
         ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/m_(.+)/, (ctx) => {
+        bot.action(/m_(.+)/, async (ctx) => {
             const index = Number(ctx.match[1])
             const photo = Photos[index-1]
             const description = Descriptions[index-1]
-            ctx.replyWithPhoto(photo, {caption: description})    
+            await ctx.replyWithPhoto(photo, {caption: description})    
             const name = database[index-1]                                                                                                                                                                                                                          
             busket.push(name)
             ctx.reply(`${name} was added to the busket`, BuskMenu);
