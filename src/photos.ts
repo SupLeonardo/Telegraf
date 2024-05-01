@@ -46,5 +46,13 @@ export const Photos = [
 
     //non-alcoholic cocktails
     'https://clck.ru/3APoiG', 'https://clck.ru/3APogc', 'https://clck.ru/3APorf',
-    'https://clck.ru/3APou4', 'https://clck.ru/3APoxP'
+    'https://clck.ru/3APou4', 'https://clck.ru/3APoxP', 'https://clck.ru/3AQ335',
+    'https://clck.ru/3AQ38u', 'https://clck.ru/3AQ3WQ', 'https://clck.ru/3AQ3jd',
+    'https://clck.ru/3AQ42h', 'https://clck.ru/3AQ4ZD', 'https://clck.ru/3AQ46j',
+    'https://clck.ru/3AQ4kB', 'https://clck.ru/3AQ4ur', 'https://clck.ru/3AQ57p',
+
+    //drinks & milkshakes
+    'https://clck.ru/3AQ5Ge', 'https://clck.ru/3AQ5M6', 'https://clck.ru/3AQ5SD',
+    'https://clck.ru/3AQ5UB', 'https://clck.ru/3AQ5VU', 'https://clck.ru/3AQ5X3',
+    'https://clck.ru/3AQ5Yv'
 ]

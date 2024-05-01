@@ -6,7 +6,7 @@ export const database = ['Chicken fried steak with processed cheese',
 'Filet Mignon with Bacon and Cheese', 'Baked Salmon with Lemon-Herb Butter', 
 'Grilled Salmon with Lemon-Herb Butter', 'Grilled Lemon Garlic Shrimp', 
 'Roasted Chicken with Lemon-Herb Butter', 'Roasted Filet Mignon with Lemon-Herb Butter', 
-'Roasted Salmon with Lemon-Herb Butter', 
+'Roasted Salmon with Lemon-Herb Butter', // 12
 
 
 // side dishes
@@ -22,35 +22,35 @@ export const database = ['Chicken fried steak with processed cheese',
 'Cobb Salad with Avocado', 'Quinoa Salad with Roasted Vegetables',
 'Caprese Salad with Balsamic Glaze', 'Asian Chicken Salad with Sesame Dressing',
 'Beetroot and Goat Cheese Salad', 'Southwest Salad with Cilantro Lime Dressing',
-'Kale Salad with Lemon Vinaigrette', 
+'Kale Salad with Lemon Vinaigrette', //32
 
 
 // desserts
 'Classic New York Cheesecake', 'Chocolate Lava Cake with Vanilla Ice Cream',
 'Apple Pie with Cinnamon', 'Tiramisu with Mascarpone Cream', 'Lemon Tart with Raspberry Sauce',
 'Crème Brûlée with Fresh Berries', 'Red Velvet Cake with Cream Cheese Frosting', 'Brownie Sundae with Hot Fudge',
-'Panna Cotta with Mixed Berry Compote', 'Bread Pudding with Bourbon Sauce',
+'Panna Cotta with Mixed Berry Compote', 'Bread Pudding with Bourbon Sauce', //42
 
 // strong alcohol
 'Vodka', 'Whiskey', 'Rum',
 'Tequila', 'Mezcal',  'Mezquit',
 'Shochu',  'Gin',  'Tequila Sunrise',
-'Cognac',  'Martini',
+'Cognac',  'Martini', //53
 
 // light alochol
 'Red wine (dry)', 'Red wine (semi-dry)', 'Rosé wine (dry)', 'Rosé wine (semi-dry)', 'White wine (dry)', 'White wine (semi-dry)',
-            'Champagne', 'Prosecco', 'Cider', 'Beer (light)', 'Beer (dark)', 'Sake', 'Soju',
+            'Champagne', 'Prosecco', 'Cider', 'Beer (light)', 'Beer (dark)', 'Sake', 'Soju', //66
 
 //alcoholic cocktals
 'Margarita', 'Mojito', 'Old Fashioned', 'Manhattan',
             'Cosmopolita', 'Daiquiri', 'Tom Collins',  'Moscow Mule',
-            'Whiskey Sour', 'Gimlet',
+            'Whiskey Sour', 'Gimlet', //76
 
 //non alocoholic cocktails
 'Saffron Cordial', 'Non-Alcoholic Negroni', 'Sharab Rose Raspberry Shrub Cocktail',
 'Frozen Shirley Temple', 'Nonalcoholic Champagne Spritz', 'Strawberry-Chile Balsamic Shrub',
 'Pineapple and Tamarind Cooler', 'Watermelon Limeade', 'Green Refresher',
-'Coffee Cooler', 'Ghia Sour', 'Cherry Red', 'Jardin Verde', 'Shift Drink', 'Psychedelic Backyard',
+'Coffee Cooler', 'Ghia Sour', 'Cherry Red', 'Jardin Verde', 'Shift Drink', 'Psychedelic Backyard', //91
 
 // DRINKS & MILSHAKES
 
@@ -58,7 +58,9 @@ export const database = ['Chicken fried steak with processed cheese',
 
 ]
 
-
+export const Confirmation = Markup.inlineKeyboard([
+    [Markup.button.callback('Yes', 'yes'), Markup.button.callback('No', 'no')]
+])
 
 export const Start = Markup.inlineKeyboard([
     [Markup.button.callback('Main menu', 'menu'), 
@@ -72,10 +74,10 @@ export const Menu = Markup.inlineKeyboard([
 
 export const Bar = Markup.inlineKeyboard([
     [Markup.button.callback('Strong alcohol', 'alc')],
-    [Markup.button.callback('Light alcohol', 'l_alc')],
-    [Markup.button.callback('Drinks & Milkshakes', 'n-alc')],
-    [Markup.button.callback('Alcoholic cocktails', 'alc_c')],
-    [Markup.button.callback('Non-alcoholic cocktails', 'n-alc_c')]
+    [Markup.button.callback('Light alcohol', 'la')],
+    [Markup.button.callback('Drinks & Milkshakes', 'mi')],
+    [Markup.button.callback('Alcoholic cocktails', 'ac')],
+    [Markup.button.callback('Non-alcoholic cocktails', 'nac')]
 ])
 
 export const Main_Course = Markup.inlineKeyboard([
@@ -132,15 +134,15 @@ export const Desserts = Markup.inlineKeyboard([
     [Markup.button.callback('Bread Pudding with Bourbon Sauce', 'd_42')]
 ])
 
-export const Non_Alco = Markup.inlineKeyboard([
-    [Markup.button.callback('Coca Cola', 'na_92')],
-    [Markup.button.callback('Sprite', 'na_93')],
-    [Markup.button.callback('Fanta', 'na_94')],
-    [Markup.button.callback('Strawberry Milkshake', 'na_95')],
-    [Markup.button.callback('Banana Milkshake', 'na_96')],
-    [Markup.button.callback('Chockolate Milkshake', 'na_97')],
-    [Markup.button.callback('Vanilla Milkshake', 'na_98')]
-])
+// export const Non_Alco = Markup.inlineKeyboard([
+//     [Markup.button.callback('Coca Cola', 'na_92')],
+//     [Markup.button.callback('Sprite', 'na_93')],
+//     [Markup.button.callback('Fanta', 'na_94')],
+//     [Markup.button.callback('Strawberry Milkshake', 'na_95')],
+//     [Markup.button.callback('Banana Milkshake', 'na_96')],
+//     [Markup.button.callback('Chockolate Milkshake', 'na_97')],
+//     [Markup.button.callback('Vanilla Milkshake', 'na_98')]
+// ])
 
 export const Strong_Acoholo = Markup.inlineKeyboard([
     [Markup.button.callback('Vodka', 'sta_43')],
@@ -197,6 +199,16 @@ export const Not_Alc_Cocktails = Markup.inlineKeyboard([
     [Markup.button.callback('Jardin Verde', 'nac_89')],
     [Markup.button.callback('Shift Drink', 'nac_90')],
     [Markup.button.callback('Psychedelic Backyard', 'nac_91')]
+])
+
+export const Milkshakes = Markup.inlineKeyboard([
+    [Markup.button.callback('Chocolate Milkshake', 'mi_92')],
+    [Markup.button.callback('Vanilla Milkshake', 'mi_93')],
+    [Markup.button.callback('Caramel Milkshake', 'mi_94')],
+    [Markup.button.callback('Strawberry Milkshake', 'mi_95')],
+    [Markup.button.callback('Banana Milkshake', 'mi_96')],
+    [Markup.button.callback('Chockolate Milkshake', 'mi_97')],
+    [Markup.button.callback('Vanilla Milkshake', 'mi_98')]
 ])
 
 
