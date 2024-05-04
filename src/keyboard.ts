@@ -1,5 +1,9 @@
 import { Markup } from "telegraf"
 
+export const RemoveBusket = Markup.inlineKeyboard([
+    
+])
+
 export const database = ['Chicken fried steak with processed cheese', 
 'Chicken Fried Steak', 'Grilled Beef with Mushroom Sause', 
 'Pork Chops with Apple Sauce', 'Beef Tenderloin with Roasted Peppers and Onions', 
@@ -69,7 +73,7 @@ export const Start = Markup.inlineKeyboard([
 
 export const Menu = Markup.inlineKeyboard([
     [Markup.button.callback('Main course', 'mc'), Markup.button.callback('Side dishes', 'sd')],
-    [Markup.button.callback('Salads', 'salad'), Markup.button.callback('Desserts', 'dessert')]
+    [Markup.button.callback('Salads', 'sa'), Markup.button.callback('Desserts', 'd')]
 ]);
 
 export const Bar = Markup.inlineKeyboard([
@@ -220,7 +224,7 @@ export const goBusket = Markup.keyboard([
 .resize()
 
 export const goMenu = Markup.keyboard([
-    'Menu'
+    'Menu', 'Change quantity'
 ]).resize()
 
 export const BuskMenu = Markup.keyboard([

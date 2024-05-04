@@ -1,14 +1,17 @@
 import { Telegraf, Markup, Context } from 'telegraf'
 import { georgiy } from './src/georgy';
-import { Bar, Milkshakes, Confirmation, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, goMenu, BuskMenu }
+import { RemoveBusket, Bar, Milkshakes, Confirmation, Start, Menu, Main_Course, Salads, Side_dishes, Desserts, database, goBusket, Light_Acoholo, Alc_Cocktails, Strong_Acoholo, Not_Alc_Cocktails, goMenu, BuskMenu }
 from './src/keyboard';
 import { Descriptions } from './src/descriptions';
 import { Photos } from './src/photos';
 import { Triggers } from 'telegraf/typings/composer';
 import { InlineKeyboardMarkup, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { keyboard } from 'telegraf/typings/markup';
+import { measureMemory } from 'vm';
 
 let busket: string[] = []
+let countBusket: string[] = []
+let countArr: number[] = []
 const bot = new Telegraf(georgiy)
 
 function countUniqueValues(arr: any[]): number {
@@ -21,31 +24,29 @@ function countOccurrences(arr: string[], value: string): number { // counter how
 }
 
 function addToBusket(ctx: Context, name: string) {
-    const uniq = countUniqueValues(busket) // unique values in a busket
-    let countBusket: number[] = []
-    // countBusket.length = uniq // empty array with length of unique values
-    let arr: string[] = []
-    console.log(name)
-    if (!(busket.includes(name))) {
-        busket.push(name)
-    }
+    if (!countBusket.includes(name)) {
+        countBusket.push(name)
+    }   
     console.log(busket)
+    console.log(countBusket)
     Busket()
 }
-let nameing: string
+let product: string
 function Yes(name: string) {
-    nameing = name
+    product = name
 }
 
 function Action(ctx: Context, index: number, menu_text: string, keyboard: Markup.Markup<InlineKeyboardMarkup>) {
     ctx.telegram.sendMessage(ctx.chat.id, 'Do you want to add this product to your busket? You will be able to change a quantity later', Confirmation)
     let name = database[index]
     Yes(name)
-    bot.action('yes', (ctx) => {
-        busket.push(nameing)
-        ctx.reply(`${nameing} was added to the busket`, BuskMenu);
+    bot.action('yes', async (ctx) => {
+        busket.push(product)
+        let message = await ctx.reply(`${product} was added to the busket`, BuskMenu);
+        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
+        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
         ctx.answerCbQuery()
-        addToBusket(ctx, nameing)
+        addToBusket(ctx, product)
         Busket()
     })
     bot.action('no', async (ctx) => {
@@ -61,8 +62,8 @@ function Product(callback: string, menu: string, trigger: RegExp, ctx: Context, 
     switch(callback) {
         case 'mc' : menu_text = 'Our main course menu'; break
         case 'sd' : menu_text = 'Our side dishes menu'; break
-        case 'salad': menu_text = 'Our salads menu'; break
-        case 'dessert': menu_text = 'Our desserts menu'; break
+        case 'sa': menu_text = 'Our salads menu'; break
+        case 'd': menu_text = 'Our desserts menu'; break
         case 'alc': menu_text = 'Our strong alcoholic drinks menu'; break
         case 'la': menu_text = 'Our light alcoholic drinks menu'; break
         case 'mi': menu_text = 'Our non-alcoholic drinks menu'; break
@@ -72,7 +73,7 @@ function Product(callback: string, menu: string, trigger: RegExp, ctx: Context, 
     }
     bot.action(callback, (ctx) => {
         ctx.telegram.sendMessage(ctx.chat.id, menu_text, keyboard)
-        
+        ctx.answerCbQuery()
         bot.action(trigger, async (ctx) => {
             let index = Number(ctx.match[1])
             let description = Descriptions[index-1]
@@ -84,7 +85,7 @@ function Product(callback: string, menu: string, trigger: RegExp, ctx: Context, 
     })
 }
 bot.start( async (ctx) => {
-    await ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot", BuskMenu)
+    await ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot", goBusket)
     ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     busket = []
     Busket()
@@ -93,18 +94,56 @@ bot.start( async (ctx) => {
 const Busket = () => {
     bot.hears('Busket', async (ctx) => {
         if (busket.length === 0) {
-            ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something')
+            ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something', Markup.keyboard(['Menu']).resize())
         } else {
             await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", goMenu)
-            for (let i = 0; i < busket.length; i++) {
-                let count = countOccurrences(busket, busket[i])
-                await ctx.telegram.sendMessage(ctx.chat.id, `${i+1}. ${busket[i]}, ${count}`)
+            for (let i = 0; i < countBusket.length; i++) {
+                if (!countBusket.includes(busket[i])) {
+                    countBusket.push(busket[i])
+                }
+                let count = countOccurrences(busket, countBusket[i])
+                await ctx.telegram.sendMessage(ctx.chat.id, `${i+1}. ${countBusket[i]}, ${count}`)
             }
+            bot.hears('Change quantity', async (ctx) => {
+                let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it')
+                for (let i = 0; i < countBusket.length; i++) {
+                    let count = countOccurrences(busket, countBusket[i])
+                    countArr.push(count)
+                    await ctx.telegram.sendMessage(ctx.chat.id, `${countBusket[i]}: ${count}`, 
+                    Markup.inlineKeyboard([
+                        Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
+                    ]))
+                    bot.action(/-_(.+)/, async (ctx) => {
+                        ctx.answerCbQuery()
+                        let index = Number(ctx.match[1])
+                        countArr[index]--
+                        if (countArr[index] === 0) {
+                            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+i, '0', `${countBusket[index]}: ${countArr[index]}`,)
+                        } else {
+                            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+i, '0', `${countBusket[index]}: ${countArr[index]}`,
+                            Markup.inlineKeyboard([
+                                Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
+                            ]))
+                        }
+                        console.log(countBusket[index]); console.log(countArr[index])
+                    })
+                }
+                
+                bot.action(/plus_(.+)/, async (ctx) => {
+                    countArr[ctx.match[1]]++
+                    ctx.answerCbQuery()
+                    console.log(countArr[ctx.match[1]])
+                })
+                bot.action(/done_(.+)/, async (ctx) => {
+                    console.log(countBusket[ctx.match[1]])
+                    ctx.answerCbQuery()
+                    return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
+                })
+            })
         }
     })
     
     bot.hears('Menu', (ctx) => {
-        console.log('hello')
         ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     })
 }
@@ -122,65 +161,14 @@ bot.action('bar', async (ctx) => {
 
 
 bot.action('menu', async (ctx) => {
-    let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can add food from our main menu', Menu)
-    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
+    await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can add food from our main menu', Menu)
+    
 
-
-    bot.action('mc', async (ctx) => {
-        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Our main course menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Main_Course)
-        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/m_(.+)/, async (ctx) => {
-            const index = Number(ctx.match[1])
-            const photo = Photos[index-1]
-            const description = Descriptions[index-1]
-            await ctx.replyWithPhoto(photo, {caption: description})    
-            const name = database[index-1]                                                                                                                                                                                                                          
-            busket.push(name)
-            ctx.reply(`${name} was added to the busket`, BuskMenu);
-            ctx.answerCbQuery();
-            Busket()
-        });
-        ctx.answerCbQuery();
-    })
-    bot.action('salad', async (ctx) => {
-        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'There is our salads. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Salads)
-        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/sa_(.+)/, async (ctx) => {    
-            const index = Number(ctx.match[1])
-            const name = database[index-1]
-            busket.push(name)
-            ctx.reply(`${name} was added to the busket`, BuskMenu);
-            ctx.answerCbQuery();
-            Busket()
-        });
-        ctx.answerCbQuery();
-    })
-    bot.action('sd', async (ctx) => {
-        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'There is our side dishes menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Side_dishes)
-        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/s_(.+)/, async (ctx) => {    
-            const index = Number(ctx.match[1])
-            const name = database[index-1]
-            busket.push(name)
-            ctx.reply(`${name} was added to the busket`, BuskMenu);
-            ctx.answerCbQuery();
-            Busket()
-        });
-        ctx.answerCbQuery();
-    })
-    bot.action('dessert', async (ctx) => {
-        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'There is our desserts menu. Tap on something to add it to the busket. You can change a quantity of the choosed dishes later', Desserts)
-        ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.action(/d_(.+)/, async (ctx) => {    
-            const index = Number(ctx.match[1])
-            const name = database[index-1]
-            busket.push(name)
-            ctx.reply(`${name} was added to the busket`, BuskMenu);
-            ctx.answerCbQuery();
-            Busket()
-        });
-        ctx.answerCbQuery();
-    })
+    Product('mc', 'Our main course menu', /m_(.+)/, ctx, Main_Course)
+    Product('sd', 'Our side dishes menu', /s_(.+)/, ctx, Side_dishes)
+    Product('sa', 'Our salads menu', /sa_(.+)/, ctx, Salads)
+    Product('d', 'Our desserts menu', /d_(.+)/, ctx, Desserts)
+    ctx.answerCbQuery();
 })
 
 
