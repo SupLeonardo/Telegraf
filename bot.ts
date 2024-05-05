@@ -7,12 +7,41 @@ import { Photos } from './src/photos';
 import { Triggers } from 'telegraf/typings/composer';
 import { InlineKeyboardMarkup, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { keyboard } from 'telegraf/typings/markup';
-import { measureMemory } from 'vm';
+
+const getInvoice = (id: number) => {
+    const invoice = {
+      chat_id: id, // Уникальный идентификатор целевого чата или имя пользователя целевого канала
+      provider_token: '381764678:TEST:84521', // токен выданный через бот @SberbankPaymentBot 
+      start_parameter: 'get_access', //Уникальный параметр глубинных ссылок. Если оставить поле пустым, переадресованные копии отправленного сообщения будут иметь кнопку «Оплатить», позволяющую нескольким пользователям производить оплату непосредственно из пересылаемого сообщения, используя один и тот же счет. Если не пусто, перенаправленные копии отправленного сообщения будут иметь кнопку URL с глубокой ссылкой на бота (вместо кнопки оплаты) со значением, используемым в качестве начального параметра.
+      title: 'Payment for restaurant', // Название продукта, 1-32 символа
+      description: 'You are paying 100 rubles', // Описание продукта, 1-255 знаков
+      currency: 'RUB', // Трехбуквенный код валюты ISO 4217
+      prices: [{ label: 'Invoice Title', amount: 100 * 100 }], // Разбивка цен, сериализованный список компонентов в формате JSON 100 копеек * 100 = 100 рублей
+      payload: JSON.stringify({ // Преобразование объекта в строку
+        unique_id: 'hello',
+        provider_token: '381764678:TEST:84521'
+      })
+    }
+  
+    return invoice
+}
+
+
 
 let busket: string[] = []
 let countBusket: string[] = []
 let countArr: number[] = []
 const bot = new Telegraf(georgiy)
+
+bot.hears('pay', (ctx) => { // это обработчик конкретного текста, данном случае это - "pay"
+    return ctx.replyWithInvoice(getInvoice(ctx.from.id)) //  метод replyWithInvoice для выставления счета  
+})
+
+bot.on('pre_checkout_query', (ctx) => ctx.answerPreCheckoutQuery(true)) // ответ на предварительный запрос по оплате
+
+bot.on('successful_payment', async (ctx, next) => { // ответ в случае положительной оплаты
+  await ctx.reply('SuccessfulPayment')
+})
 
 function countUniqueValues(arr: any[]): number {
     let uniqueValues = new Set(arr);
@@ -27,8 +56,8 @@ function addToBusket(ctx: Context, name: string) {
     if (!countBusket.includes(name)) {
         countBusket.push(name)
     }   
-    console.log(busket)
-    console.log(countBusket)
+    //console.log(busket)
+    //console.log(countBusket)
     Busket()
 }
 let product: string
@@ -92,11 +121,12 @@ bot.start( async (ctx) => {
 })
 
 const Busket = () => {
+    let done: string[] = []
     bot.hears('Busket', async (ctx) => {
         if (busket.length === 0) {
             ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something', Markup.keyboard(['Menu']).resize())
         } else {
-            await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", goMenu)
+            await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", Markup.keyboard(['Menu', 'Change quantity']).oneTime())
             for (let i = 0; i < countBusket.length; i++) {
                 if (!countBusket.includes(busket[i])) {
                     countBusket.push(busket[i])
@@ -105,7 +135,7 @@ const Busket = () => {
                 await ctx.telegram.sendMessage(ctx.chat.id, `${i+1}. ${countBusket[i]}, ${count}`)
             }
             bot.hears('Change quantity', async (ctx) => {
-                let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it')
+                let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it', goMenu)
                 for (let i = 0; i < countBusket.length; i++) {
                     let count = countOccurrences(busket, countBusket[i])
                     countArr.push(count)
@@ -113,30 +143,45 @@ const Busket = () => {
                     Markup.inlineKeyboard([
                         Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
                     ]))
-                    bot.action(/-_(.+)/, async (ctx) => {
-                        ctx.answerCbQuery()
-                        let index = Number(ctx.match[1])
-                        countArr[index]--
-                        if (countArr[index] === 0) {
-                            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+i, '0', `${countBusket[index]}: ${countArr[index]}`,)
-                        } else {
-                            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+i, '0', `${countBusket[index]}: ${countArr[index]}`,
-                            Markup.inlineKeyboard([
-                                Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
-                            ]))
-                        }
-                        console.log(countBusket[index]); console.log(countArr[index])
-                    })
+                    
                 }
-                
+                bot.action(/-_(.+)/, async (ctx) => {
+                    ctx.answerCbQuery()
+                    let index = Number(ctx.match[1])
+                    countArr[index]--
+                    if (countArr[index] === 0) {
+                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`, 
+                        Markup.inlineKeyboard([
+                            Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`)
+                        ]))
+                    } else {
+                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`,
+                        Markup.inlineKeyboard([
+                                     Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
+                                ]))
+                        // console.log(countBusket[index]), console.log(countArr[index])
+                    }
+                    
+                    // console.log(countBusket[index]); console.log(countArr[index])
+                })
                 bot.action(/plus_(.+)/, async (ctx) => {
+                    let index = Number(ctx.match[1])
                     countArr[ctx.match[1]]++
                     ctx.answerCbQuery()
-                    console.log(countArr[ctx.match[1]])
+                    // console.log(countBusket[index]), console.log(countArr[index])
+                    await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`,
+                        Markup.inlineKeyboard([
+                                     Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
+                                ]))
                 })
                 bot.action(/done_(.+)/, async (ctx) => {
-                    console.log(countBusket[ctx.match[1]])
+                    let index = Number(ctx.match[1])
+                    // console.log(countBusket[ctx.match[1]])
                     ctx.answerCbQuery()
+                    done.push(countBusket[index])
+                    if (done.length === countBusket.length) {
+                        ctx.telegram.sendMessage(ctx.chat.id, "That's it. Now, payment")
+                    }
                     return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
                 })
             })

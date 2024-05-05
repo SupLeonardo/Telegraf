@@ -224,7 +224,7 @@ export const goBusket = Markup.keyboard([
 .resize()
 
 export const goMenu = Markup.keyboard([
-    'Menu', 'Change quantity'
+    'Menu'
 ]).resize()
 
 export const BuskMenu = Markup.keyboard([
