@@ -7,6 +7,9 @@ import { Photos } from './src/photos';
 import { Triggers } from 'telegraf/typings/composer';
 import { InlineKeyboardMarkup, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { keyboard } from 'telegraf/typings/markup';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient()
 
 const getInvoice = (id: number) => {
     const invoice = {
@@ -192,6 +195,8 @@ const Busket = () => {
         ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     })
 }
+
+Busket()
 
 bot.action('bar', async (ctx) => {
     let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks. You can choose their quantity later', Bar)
