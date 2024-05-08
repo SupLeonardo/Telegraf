@@ -12,7 +12,7 @@ export const Photos = [
     // side dishes
     'https://clck.ru/3APfxc', 'https://clck.ru/3APfz6', 'https://clck.ru/3APg4S',
     'https://clck.ru/3APgAE', 'https://clck.ru/3APgBg', 'https://clck.ru/3APgDE',
-    'https://clck.ru/3APgEh', 'https://clck.ru/3APgHK', 'https://clck.ru/3APgJx',
+    'https://clck.ru/3APgEh', 'https://clck.ru/3AXLD4', 'https://clck.ru/3APgHK', 'https://clck.ru/3APgJx',
     
     //salads
     'https://clck.ru/3APgMD', 'https://clck.ru/3APgVj', 'https://clck.ru/3APgXd',

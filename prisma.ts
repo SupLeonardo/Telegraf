@@ -6,16 +6,8 @@ import { database } from './src/keyboard';
 const prisma = new PrismaClient();
 
 async function createDish() {
-  for (let i = 0; i < database.length; i++) {
-    await prisma.dish.create({
-      data: {
-        id: i+1,
-        name: database[i],
-        photo: Photos[i],
-        description: Descriptions[i]
-      }
-    })
-  }
+  const dishes = await prisma.dish.findMany({orderBy: {id: "asc"}})
+  console.log(dishes[dishes.length - 1])
 }
 
 createDish();

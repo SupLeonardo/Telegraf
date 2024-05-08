@@ -34,7 +34,7 @@ const getInvoice = (id: number) => {
 let busket: string[] = []
 let countBusket: string[] = []
 let countArr: number[] = []
-const bot = new Telegraf(georgiy)
+const bot = new Telegraf(process.env.georgiy)
 
 bot.hears('pay', (ctx) => { // это обработчик конкретного текста, данном случае это - "pay"
     return ctx.replyWithInvoice(getInvoice(ctx.from.id)) //  метод replyWithInvoice для выставления счета  
