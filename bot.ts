@@ -62,7 +62,7 @@ function countOccurrences(arr: string[], value: string): number { // counter how
 
 
 
-function addToBusket(name: string) {
+async function addToBusket(name: string, ctx: Context) {
     if (!busketName.includes(name)) {
         busketName.push(name)
         busketNumber.push(1)
@@ -70,6 +70,10 @@ function addToBusket(name: string) {
         let index = busketName.indexOf(name)
         busketNumber[index] += 1
     }
+    let message = await ctx.telegram.sendMessage(ctx.chat.id, `${name} was added to the busket`, Markup.keyboard(['Busket', 'Menu']).resize().oneTime())
+                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
+                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
+                Busket()
 }
 
 const Busket = () => {
@@ -77,10 +81,60 @@ const Busket = () => {
         if (busketName.length === 0) {
             ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something', Markup.keyboard(['Menu']).resize())
         } else {
+            ctx.reply('This is your busket:')
             for (let i = 0; i < busketName.length; i++) {
-                ctx.reply(`${busketName[i]}: ${busketNumber[i]}`, Markup.keyboard(['Menu']).resize().oneTime())
+                ctx.reply(`${busketName[i]}: ${busketNumber[i]}`, Markup.keyboard(['Menu', 'Change quantity']).resize().oneTime())
             }
         }
+    })
+
+    bot.hears('Change quantity', async ctx => {
+        let done = 0
+        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it', goMenu)
+                for (let i = 0; i < busketName.length; i++) {
+                    await ctx.telegram.sendMessage(ctx.chat.id, `${busketName[i]}: ${busketNumber[i]}`, 
+                    Markup.inlineKeyboard([
+                        Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
+                    ]))
+                    
+                }
+                console.log('alright')
+                bot.action(/-_(.+)/, async (ctx) => {
+                    ctx.answerCbQuery()
+                    let index = Number(ctx.match[1])
+                    busketNumber[index]--
+                    console.log('pon')
+                    if (busketNumber[index] === 0) {
+                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`, 
+                        Markup.inlineKeyboard([
+                            Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`)
+                        ]))
+                    } else {
+                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
+                        Markup.inlineKeyboard([
+                                     Markup.button.callback('-', `-_${index}`),  Markup.button.callback('Done', `done_${index}`),
+                                ]))
+                    }
+                })
+                bot.action(/plus_(.+)/, async (ctx) => {
+                    let index = Number(ctx.match[1])
+                    console.log(index)
+                    busketNumber[ctx.match[1]]++
+                    ctx.answerCbQuery()
+                    await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
+                        Markup.inlineKeyboard([
+                                     Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
+                                ]))
+                })
+                bot.action(/done_(.+)/, async (ctx) => {
+                    let index = Number(ctx.match[1])
+                    ctx.answerCbQuery()
+                    done++
+                    if (done === busketName.length) {
+                        ctx.telegram.sendMessage(ctx.chat.id, "That's it. Now, payment")
+                    }
+                    return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
+                })
     })
     
     bot.hears('Menu', (ctx) => {
@@ -99,7 +153,7 @@ async function Action(ctx: Context, menu_text: string, confirm: string, id: numb
                         name: true
                     }
                 })
-                addToBusket(name.name)
+                addToBusket(name.name, ctx)
                 let message = await ctx.telegram.sendMessage(ctx.chat.id, `${name.name} was added to the busket`, Markup.keyboard(['Busket', 'Menu']).resize())
                 ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
                 ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
@@ -130,7 +184,7 @@ let confirm = Markup.inlineKeyboard([
 
 let id: number
 
-function Product(ctx: Context, callback: string) {
+async function Product(ctx: Context, callback: string) {
     let menu_text: string
     let keyboard: Markup.Markup<InlineKeyboardMarkup>
     
@@ -146,24 +200,21 @@ function Product(ctx: Context, callback: string) {
         case 'nac': menu_text = 'Our non-alcoholic cocktail menu'; keyboard = Not_Alc_Cocktails; break
     }
     ctx.answerCbQuery()
+    let message = await ctx.telegram.sendMessage(ctx.chat.id, menu_text, keyboard)
+    bot.on(callbackQuery("data"), async ctx => {
+        if (!isNaN(+ctx.callbackQuery.data)) {
+            id = Number(ctx.callbackQuery.data)
+            await getByIdFromPrisma(ctx, prisma, id)
+            await ctx.telegram.sendMessage(ctx.chat.id, 'Do you want to add this product to the busket? You will be able to change a quantity later', confirm)
+        }
+        ctx.answerCbQuery()
+    })
+
     bot.action(callback, async ctx => {
         ctx.answerCbQuery()
         let message = await ctx.telegram.sendMessage(ctx.chat.id, menu_text, keyboard)
         ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-        bot.on(callbackQuery("data"), async ctx => {
-            ctx.answerCbQuery()
-            if (!isNaN(+ctx.callbackQuery.data)) {
-                id = Number(ctx.callbackQuery.data)
-                await getByIdFromPrisma(ctx, prisma, id)
-                await ctx.telegram.sendMessage(ctx.chat.id, 'Do you want to add this product to the busket? You will be able to change a quantity later', confirm)
-                
-            } else if (ctx.callbackQuery.data === 'yes') {
-                Action(ctx, menu_text, 'yes', id, keyboard)
-            } else if (ctx.callbackQuery.data === 'no') {
-                ctx.reply('This product wasn`t added to the busket', Markup.keyboard(['Menu', 'Busket']).resize())
-                
-            }
-        })
+
         bot.hears('Menu', ctx => {
             ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
         })
@@ -173,6 +224,18 @@ function Product(ctx: Context, callback: string) {
     })
     ctx.answerCbQuery()
 }
+
+bot.action('yes', ctx => {
+    addToBusket(prosduct, ctx)
+})
+
+bot.action('no', async ctx => {
+    let message = await ctx.reply(`${prosduct} wasn't added to the busket`)
+    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
+    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
+})
+
+Busket()
 
 bot.start( async (ctx) => {
     await ctx.telegram.sendMessage(ctx.chat.id, "Welcome! I'm a restaurant bot", goBusket)
@@ -257,30 +320,61 @@ bot.start( async (ctx) => {
 
 // Busket()
 
-bot.action('bar', async (ctx) => {
-    let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks. You can choose their quantity later', Bar)
-    bot.action('alc', ctx => {
-        console.log('hi')
-        Product(ctx, 'alc')
+Menue()
+
+function Menue() {
+    bot.action('bar', async (ctx) => {
+        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can choose some drinks. You can choose their quantity later', Bar)
+        
+        ctx.answerCbQuery();
     })
     
-    Product(ctx, 'la')
-    Product(ctx, 'ml')
-    Product(ctx, 'ac')
-    Product(ctx, 'nac')
-    ctx.answerCbQuery();
-})
-
-
-bot.action('menu', async (ctx) => {
-    await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can add food from our main menu', Menu)
     
-    Product(ctx, 'mc')
-    Product(ctx, 'sd')
-    Product(ctx, 'sa')
-    Product(ctx, 'd')
-    ctx.answerCbQuery();
+    bot.action('menu', async (ctx) => {
+        await ctx.telegram.sendMessage(ctx.chat.id, 'Here you can add food from our main menu', Menu)
+        
+        ctx.answerCbQuery();
+    })
+}
+
+bot.action('alc', ctx => {
+    Product(ctx, 'alc')
 })
+bot.action('la', ctx => {
+    Product(ctx, 'la')
+})
+bot.action('ml', ctx => {
+    Product(ctx, 'ml')
+})
+bot.action('la', ctx => {
+    Product(ctx, 'la')
+})
+bot.action('ac', ctx => {
+    Product(ctx, 'ac')
+})
+bot.action('nac', ctx => {
+    Product(ctx, 'nac')
+})
+
+bot.action('alc', ctx => {
+    Product(ctx, 'alc')
+})
+bot.action('mc', ctx => {
+    Product(ctx, 'mc')
+})
+bot.action('ml', ctx => {
+    Product(ctx, 'ml')
+})
+bot.action('sd', ctx => {
+    Product(ctx, 'sd')
+})
+bot.action('sa', ctx => {
+    Product(ctx, 'sa')
+})
+bot.action('d', ctx => {
+    Product(ctx, 'd')
+})
+
 
 
 bot.launch()

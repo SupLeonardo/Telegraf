@@ -5,13 +5,13 @@ import { Descriptions } from './src/descriptions';
 const prisma = new PrismaClient();
 
 async function createDish() {
-  const user = await prisma.dish.findUnique({
-    where: {
-      id: 2,
-    },
-    select: {
-      photo: true,
-    },
+  const user = await prisma.dish.create({
+    data: {
+      name: 'Пицца',
+      id: 100,
+      photo: '1',
+      description: 'hello'
+    }
   });
   
   console.log(user.photo);
