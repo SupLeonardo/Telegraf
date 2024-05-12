@@ -4,12 +4,12 @@ import { RemoveBusket, Bar, Milkshakes, Start, Menu, Main_Course, Salads, Side_d
 from './src/keyboard';
 import { Descriptions } from './src/descriptions';
 import { Photos } from './src/photos';
-import { Triggers } from 'telegraf/typings/composer';
-import { InlineKeyboardMarkup, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
-import { keyboard } from 'telegraf/typings/markup';
+import { InlineKeyboardMarkup, Message, ReplyKeyboardMarkup } from 'telegraf/typings/core/types/typegram';
 import { PrismaClient } from '@prisma/client';
-import { Message } from 'telegraf/typings/core/types/typegram';
+// import { Message } from 'telegraf/typings/core/types/typegram';
 import { callbackQuery } from "telegraf/filters";
+
+
 
 const bot = new Telegraf(process.env.georgiy)
 const prisma = new PrismaClient()
@@ -71,94 +71,77 @@ async function addToBusket(name: string, ctx: Context) {
         busketNumber[index] += 1
     }
     let message = await ctx.telegram.sendMessage(ctx.chat.id, `${name} was added to the busket`, Markup.keyboard(['Busket', 'Menu']).resize().oneTime())
-                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
                 Busket()
+                ctx.answerCbQuery()
 }
 
-const Busket = () => {
+const Busket = async () => {
     bot.hears('Busket', async (ctx) => {
         if (busketName.length === 0) {
             ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something', Markup.keyboard(['Menu']).resize())
         } else {
-            ctx.reply('This is your busket:')
+            await ctx.reply('This is your busket:')
             for (let i = 0; i < busketName.length; i++) {
                 ctx.reply(`${busketName[i]}: ${busketNumber[i]}`, Markup.keyboard(['Menu', 'Change quantity']).resize().oneTime())
             }
         }
     })
 
+    let message: Message.TextMessage
+
     bot.hears('Change quantity', async ctx => {
-        let done = 0
-        let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it', goMenu)
+        message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it', goMenu)
                 for (let i = 0; i < busketName.length; i++) {
                     await ctx.telegram.sendMessage(ctx.chat.id, `${busketName[i]}: ${busketNumber[i]}`, 
                     Markup.inlineKeyboard([
                         Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
                     ]))
                     
-                }
-                console.log('alright')
-                bot.action(/-_(.+)/, async (ctx) => {
-                    ctx.answerCbQuery()
-                    let index = Number(ctx.match[1])
-                    busketNumber[index]--
-                    console.log('pon')
-                    if (busketNumber[index] === 0) {
-                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`, 
-                        Markup.inlineKeyboard([
-                            Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`)
-                        ]))
-                    } else {
-                        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
-                        Markup.inlineKeyboard([
-                                     Markup.button.callback('-', `-_${index}`),  Markup.button.callback('Done', `done_${index}`),
-                                ]))
-                    }
-                })
-                bot.action(/plus_(.+)/, async (ctx) => {
-                    let index = Number(ctx.match[1])
-                    console.log(index)
-                    busketNumber[ctx.match[1]]++
-                    ctx.answerCbQuery()
-                    await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
-                        Markup.inlineKeyboard([
-                                     Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
-                                ]))
-                })
-                bot.action(/done_(.+)/, async (ctx) => {
-                    let index = Number(ctx.match[1])
-                    ctx.answerCbQuery()
-                    done++
-                    if (done === busketName.length) {
-                        ctx.telegram.sendMessage(ctx.chat.id, "That's it. Now, payment")
-                    }
-                    return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
-                })
+                } 
+    })
+    let done = 0
+    bot.action(/-_(.+)/, async (ctx) => {
+        ctx.answerCbQuery()
+        let index = Number(ctx.match[1])
+        busketNumber[index]--
+        if (busketNumber[index] === 0) {
+            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`, 
+            Markup.inlineKeyboard([
+                Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`)
+            ]))
+        } else {
+            await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
+            Markup.inlineKeyboard([
+                         Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
+                    ]))
+        }
+    })
+
+    bot.action(/plus_(.+)/, async (ctx) => {
+        let index = Number(ctx.match[1])
+        busketNumber[index]++
+        ctx.answerCbQuery()
+        await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${busketName[index]}: ${busketNumber[index]}`,
+            Markup.inlineKeyboard([
+                         Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
+            ]))
+    })
+
+    bot.action(/done_(.+)/, async (ctx) => {
+        let index = Number(ctx.match[1])
+        ctx.answerCbQuery()
+        done++
+        if (done === busketNumber.length && done!=0) {
+            ctx.telegram.sendMessage(ctx.chat.id, "That's all. Now, payment")
+        } else if (done === 0) {
+            ctx.reply('Your busket is empty. Check our menu and add something')
+        }
+        return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
     })
     
     bot.hears('Menu', (ctx) => {
         ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     })
-}
-
-async function Action(ctx: Context, menu_text: string, confirm: string, id: number, keyboard: Markup.Markup<InlineKeyboardMarkup>) {
-        switch(confirm) {
-            case 'yes':
-                const name = await prisma.dish.findUnique({
-                    where: {
-                        id: id,
-                    },
-                    select: {
-                        name: true
-                    }
-                })
-                addToBusket(name.name, ctx)
-                let message = await ctx.telegram.sendMessage(ctx.chat.id, `${name.name} was added to the busket`, Markup.keyboard(['Busket', 'Menu']).resize())
-                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-                ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
-                Busket()
-            }
 }
 
 async function getByIdFromPrisma(ctx: Context, prisma: PrismaClient, id: number ) {
@@ -218,8 +201,6 @@ async function Product(ctx: Context, callback: string) {
         bot.hears('Menu', ctx => {
             ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
         })
-
-            // Action(ctx, menu_text, Number(ctx.callbackQuery.data), keyboard)
             ctx.answerCbQuery()
     })
     ctx.answerCbQuery()
@@ -231,8 +212,7 @@ bot.action('yes', ctx => {
 
 bot.action('no', async ctx => {
     let message = await ctx.reply(`${prosduct} wasn't added to the busket`)
-    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-1)
-    ctx.telegram.deleteMessage(ctx.chat.id, message.message_id-2)
+    ctx.answerCbQuery()
 })
 
 Busket()
@@ -242,83 +222,7 @@ bot.start( async (ctx) => {
     ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
     busketName = []
     busketNumber = []
-    // Busket()
 })
-
-// const Busket = () => {
-//     let done: string[] = []
-//     bot.hears('Busket', async (ctx) => {
-//         if (busket.length === 0) {
-//             ctx.telegram.sendMessage(ctx.chat.id, 'Oops! Your busket is empty. Try to add something', Markup.keyboard(['Menu']).resize())
-//         } else {
-//             await ctx.telegram.sendMessage(ctx.chat.id, "This is your busket:", Markup.keyboard(['Menu', 'Change quantity']).oneTime())
-//             for (let i = 0; i < countBusket.length; i++) {
-//                 if (!countBusket.includes(busket[i])) {
-//                     countBusket.push(busket[i])
-//                 }
-//                 let count = countOccurrences(busket, countBusket[i])
-//                 await ctx.telegram.sendMessage(ctx.chat.id, `${i+1}. ${countBusket[i]}, ${count}`)
-//             }
-//             bot.hears('Change quantity', async (ctx) => {
-//                 let message = await ctx.telegram.sendMessage(ctx.chat.id, 'This is your busket. Press the buttons to change it', goMenu)
-//                 for (let i = 0; i < countBusket.length; i++) {
-//                     let count = countOccurrences(busket, countBusket[i])
-//                     countArr.push(count)
-//                     await ctx.telegram.sendMessage(ctx.chat.id, `${countBusket[i]}: ${count}`, 
-//                     Markup.inlineKeyboard([
-//                         Markup.button.callback('-', `-_${i}`), Markup.button.callback('+', `plus_${i}`), Markup.button.callback('Done', `done_${i}`),
-//                     ]))
-                    
-//                 }
-//                 bot.action(/-_(.+)/, async (ctx) => {
-//                     ctx.answerCbQuery()
-//                     let index = Number(ctx.match[1])
-//                     countArr[index]--
-//                     if (countArr[index] === 0) {
-//                         await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`, 
-//                         Markup.inlineKeyboard([
-//                             Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`)
-//                         ]))
-//                     } else {
-//                         await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`,
-//                         Markup.inlineKeyboard([
-//                                      Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
-//                                 ]))
-//                         // console.log(countBusket[index]), console.log(countArr[index])
-//                     }
-                    
-//                     // console.log(countBusket[index]); console.log(countArr[index])
-//                 })
-//                 bot.action(/plus_(.+)/, async (ctx) => {
-//                     let index = Number(ctx.match[1])
-//                     countArr[ctx.match[1]]++
-//                     ctx.answerCbQuery()
-//                     // console.log(countBusket[index]), console.log(countArr[index])
-//                     await ctx.telegram.editMessageText(String(ctx.chat.id), message.message_id+index+1, '0', `${countBusket[index]}: ${countArr[index]}`,
-//                         Markup.inlineKeyboard([
-//                                      Markup.button.callback('-', `-_${index}`), Markup.button.callback('+', `plus_${index}`), Markup.button.callback('Done', `done_${index}`),
-//                                 ]))
-//                 })
-//                 bot.action(/done_(.+)/, async (ctx) => {
-//                     let index = Number(ctx.match[1])
-//                     // console.log(countBusket[ctx.match[1]])
-//                     ctx.answerCbQuery()
-//                     done.push(countBusket[index])
-//                     if (done.length === countBusket.length) {
-//                         ctx.telegram.sendMessage(ctx.chat.id, "That's it. Now, payment")
-//                     }
-//                     return ctx.editMessageReplyMarkup({ inline_keyboard: [] })
-//                 })
-//             })
-//         }
-//     })
-    
-//     bot.hears('Menu', (ctx) => {
-//         ctx.telegram.sendMessage(ctx.chat.id, "What you want to eat?", Start)
-//     })
-// }
-
-// Busket()
 
 Menue()
 
